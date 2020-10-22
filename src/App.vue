@@ -29,7 +29,7 @@ export default {
       const collection = ["Count,Name,Edition,Foil"];
       const deck = [];
       for (const fields of csv.data) {
-        collection.push(fields["quantity"] + ",\"" + fields["name"] + "\",\"" + fields["set_name"] + "\"," + fields["extras"]);
+        collection.push(fields["quantity"] + ",\"" + fields["name"] + "\",\"" + this.fixSet(fields["set_name"]) + "\"," + fields["extras"]);
         deck.push(fields["quantity"] + " " + fields["name"] + " (" + fields["set_code"].toUpperCase() + ") " + fields["collector_number"]);
       }
       this.deckList = deck.join("\n");
@@ -53,6 +53,19 @@ export default {
       document.body.appendChild(link);
       link.click();
     },
+    // Some set names don't match between Helvault and Deckbox. Case helvault, return deckbox.
+    fixSet(setName) {
+      switch (setName) {
+        case "Commander 2013":
+          return "Commander 2013 Edition";
+        case "Modern Masters 2015":
+          return "Modern Masters 2015 Edition";
+        case "Modern Masters 2017":
+          return "Modern Masters 2017 Edition";
+        default:
+          return setName;
+      }
+    }
   }
 }
 </script>
