@@ -1,35 +1,58 @@
 <template>
   <div id="app">
-    <input ref="filePicker" @change="FilePicked" type="file" accept="text/csv" />
+    <div>
+      <input ref="filePicker" @change="FilePicked" type="file" accept="text/csv" />
+    </div>
+    <div>
+      <textarea v-if="deckList" v-model="deckList" readonly style="width: 100%; height: 500px;" />
+    </div>
   </div>
 </template>
 
 <script>
+import Papa from "papaparse";
+
 export default {
   name: "App",
+
+  data() {
+    return {
+      deckList: undefined,
+    };
+  },
   methods: {
     async FilePicked(event) {
       const file = event.target.files[0];
       if (!file) return;
-      const csv = await this.readFileAsync(file);
-      const lines = csv.split("\n");
-      if (lines[0] !== "collector_number,extras,language,name,oracle_id,quantity,scryfall_id,set_code,set_name") {
-        throw new Error("Invalid header, not a helvault file");
-      }
+      const csv = await this.parseCSVFile(file);
       // Throw away header
-      lines.shift();
-      console.log(lines);
+      const collection = ["Count,Name,Edition,Foil"];
+      const deck = [];
+      for (const fields of csv.data) {
+        collection.push(fields["quantity"] + ",\"" + fields["name"] + "\",\"" + fields["set_name"] + "\"," + fields["extras"]);
+        deck.push(fields["quantity"] + " " + fields["name"] + " (" + fields["set_code"].toUpperCase() + ") " + fields["collector_number"]);
+      }
+      this.deckList = deck.join("\n");
+      const filename = file.name.replace(/\.[^/.]+$/, "");
+      this.downloadFile(filename + " (deckbox collection).csv");
     },
-    async readFileAsync(file) {
+    async parseCSVFile(file) {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(e.target.result);
-        }
-        reader.onerror = reject;
-        reader.readAsText(file);
+        Papa.parse(file, {
+          header: true,
+          complete: resolve,
+          error: reject,
+        });
       });
-    }
+    },
+    downloadFile(filename, data) {
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+    },
   }
 }
 </script>
