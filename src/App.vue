@@ -1,17 +1,35 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <input ref="filePicker" @change="FilePicked" type="file" accept="text/csv" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  name: "App",
+  methods: {
+    async FilePicked(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const csv = await this.readFileAsync(file);
+      const lines = csv.split("\n");
+      if (lines[0] !== "collector_number,extras,language,name,oracle_id,quantity,scryfall_id,set_code,set_name") {
+        throw new Error("Invalid header, not a helvault file");
+      }
+      // Throw away header
+      lines.shift();
+      console.log(lines);
+    },
+    async readFileAsync(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          resolve(e.target.result);
+        }
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    }
   }
 }
 </script>
