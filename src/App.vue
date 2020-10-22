@@ -34,7 +34,7 @@ export default {
       }
       this.deckList = deck.join("\n");
       const filename = file.name.replace(/\.[^/.]+$/, "");
-      this.downloadFile(filename + " (deckbox collection).csv");
+      this.downloadFile(filename + " (deckbox collection).csv", collection.join("\n"));
     },
     async parseCSVFile(file) {
       return new Promise((resolve, reject) => {
