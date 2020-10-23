@@ -29,8 +29,11 @@ export default {
       const collection = ["Count,Name,Edition,Foil"];
       const deck = [];
       for (const fields of csv.data) {
-        collection.push(fields["quantity"] + ",\"" + fields["name"] + "\",\"" + this.fixSet(fields["set_name"]) + "\"," + fields["extras"]);
-        deck.push(fields["quantity"] + " " + fields["name"]); // + " (" + fields["set_code"].toUpperCase() + ") " + fields["collector_number"]);
+        // const name = this.fixName(fields["name"]);
+        const name = fields["name"];
+        const set = this.fixSet(fields["set_name"]);
+        collection.push(fields["quantity"] + ",\"" + name + "\",\"" + set + "\"," + fields["extras"]);
+        deck.push(fields["quantity"] + " " + name); // + " (" + fields["set_code"].toUpperCase() + ") " + fields["collector_number"]);
       }
       this.deckList = deck.join("\n");
       const filename = file.name.replace(/\.[^/.]+$/, "");
@@ -56,16 +59,29 @@ export default {
     // Some set names don't match between Helvault and Deckbox. Case helvault, return deckbox.
     fixSet(setName) {
       switch (setName) {
+        case "Magic 2014":
+          return "Magic 2014 Core Set";
         case "Magic 2015":
           return "Magic 2015 Core Set";
         case "Modern Masters 2015":
           return "Modern Masters 2015 Edition";
         case "Modern Masters 2017":
           return "Modern Masters 2017 Edition";
+        case "M19 Gift Pack":
+          return "M19 Gift Pack Promos";
         default:
           return setName;
       }
-    }
+    },
+    // Not reliable, some cards need // some don't
+    fixName(name) {
+      const divider = name.lastIndexOf(" //");
+      if (divider > 0) {
+        return name.substr(0, divider);
+      } else {
+        return name;
+      }
+    },
   }
 }
 </script>
