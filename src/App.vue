@@ -30,7 +30,7 @@ export default {
       const deck = [];
       for (const fields of csv.data) {
         collection.push(fields["quantity"] + ",\"" + fields["name"] + "\",\"" + this.fixSet(fields["set_name"]) + "\"," + fields["extras"]);
-        deck.push(fields["quantity"] + " " + fields["name"] + " (" + fields["set_code"].toUpperCase() + ") " + fields["collector_number"]);
+        deck.push(fields["quantity"] + " " + fields["name"]); // + " (" + fields["set_code"].toUpperCase() + ") " + fields["collector_number"]);
       }
       this.deckList = deck.join("\n");
       const filename = file.name.replace(/\.[^/.]+$/, "");
