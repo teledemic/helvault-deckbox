@@ -56,8 +56,8 @@ export default {
     // Some set names don't match between Helvault and Deckbox. Case helvault, return deckbox.
     fixSet(setName) {
       switch (setName) {
-        case "Commander 2013":
-          return "Commander 2013 Edition";
+        case "Magic 2015":
+          return "Magic 2015 Core Set";
         case "Modern Masters 2015":
           return "Modern Masters 2015 Edition";
         case "Modern Masters 2017":
